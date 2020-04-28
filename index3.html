@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 把父类当中一个函数使用
+function SuperType(name){
+this.name=name
+this.friend=['a','b']
+}
+SuperType.prototype.getFriend=function(){
+  return this.friend
+}
+function SubType(name){
+  // 执行父类函数
+  SuperType.call(this,name);
+}
+var child = new SubType('shiny')
+var childRed = new SubType('red')
+console.log(child.name)//shiny
+console.log(childRed.name)//red
+child.friend.push('c')
+console.log(child.friend)//a,b,c
+console.log(childRed.friend)//a,b
+console.log(childRed.getFriend)//undefined
+    </script>
+</body>
+
+</html>

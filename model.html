@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" id="a">
+      <span id="b"></span>
+    </div>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script>
+      var obj = {};
+      Object.defineProperty(obj,'hello',{
+        set:function(newVal){
+          document.getElementById('a').value = newVal;
+          document.getElementById('b').innerHTML = newVal;
+        }
+      });
+      document.addEventListener('keyup',function(e){
+        obj.hello = e.target.value;
+      })
+    </script>
+  </body>
+</html>
