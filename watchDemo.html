@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <button @click="changeObj">初始化</button>
+      <button @click="onScroll">滑动</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          queryMovieData: {
+            id: 0,
+            age: 0,
+            pageSize: 6
+          },
+          pageIndex: 1,
+        },
+        methods: {
+          onScroll() {
+              this.pageIndex +=1;
+            this.changeObj();
+          },
+          //在调用方法传入条件之前添加属性
+          changeObj() {
+            Object.defineProperty(this.queryMovieData, "pageIndex", {
+              value: this.pageIndex, 
+              writable: true
+            });
+            window.console.log(this.queryMovieData);
+          }
+        },
+        watch: {
+          queryMovieData: {
+            handler: function(newValue) {
+               window.console.log(newValue.pageIndex);
+               //重新初始化pageIndex是因为changeObj()中定义的pageIndex值是引用的this.pageIndex
+               /**
+                * 使用Object.defineProperty()添加属性,watch侦听不到(要的就是这个效果)
+                * 想象一个场景:
+                * 先初始化(changeObj),然后queryMovieData中添加了pageIndex,值是引用的this.pageIndex
+                * 滑动(onScroll)三次后this.pageIndex变成了3,滑动中调用了changeObj,而changeObj引用的this.pageIndex
+                * 现在pageIndex为3,然后在选择一个条件(这里是改变queryMovieData任意一个属性的值),触发了侦听器
+                * newValue对象中的pageIndex为3
+               */
+                this.pageIndex = 1;
+                this.changeObj();
+            },
+            deep: true,
+            immediate: false
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
