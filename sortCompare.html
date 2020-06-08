@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      var arr = [
+        { name: "zys", age: 21 },
+        { name: "ls", age: 23 },
+        { name: "wlw", age: 22 }
+      ];
+      /**
+      *@property 数组对象属性
+      *@reverse  boolean值，升序为true
+      */
+      function createConparisonFunc(property, reverse) {
+        //不传默认为升序
+        if (reverse == undefined) {
+          reverse = 1;
+        } else {
+            //根据传入的boolean决定排序方式
+          reverse = reverse ? 1 : -1;
+        }
+        return function(object1, object2) {
+          object1 = object1[property];
+          object2 = object2[property];
+          if (object1 > object2) {
+            return reverse * -1;
+          }
+          if (object1 < object2) {
+            return reverse * 1;
+          }
+          return 0;
+        };
+      }
+      arr.sort(createConparisonFunc("age", false)); //false降序
+    </script>
+  </body>
+</html>
