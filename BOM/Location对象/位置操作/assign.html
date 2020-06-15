@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 立即打开新URL并在浏览器的历史记录中生成一条记录
+       */
+      setTimeout(() => {
+        location.replace("www.baidu.com");
+      }, 3000);
+      location.assign("http://www.wrox.com");
+      /**
+       * location.herf与window.location这两种方式
+       * 与location.assign()效果是一样的
+       */
+      //   location.href = "http://www.wrox.com";
+      //   window.location = "http://www.wrox.com";
+
+      /**
+       *通过hash,search,hostname,pathname和port属性设置为新值来改变URL
+       *每次修改location的属性(hash除外),页面都会以新URL重新加载
+       */
+      /**
+       * 假设初始化URL为 http://www.wrox.com/WileyCDA/
+       */
+      //将URL修改为 "http://www.wrox.com/WileyCDA/#section1"
+      //   location.hash = "#section1";
+      //将URL修改为 "http://www.wrox.com/WileyCDA/?q=javascript"
+      //   location.search = "?q=javascript";
+      //将URL修改为 "http://www.wrox.com/WileyCDA/"
+      //   location.hostname = "www.wrox.com/WileyCDA/";
+      //将URL修改为 "http://www.wrox.com/mydir/"
+      //   location.pathname = "mydir";
+      //将URL修改为 "http://www.wrox.com/mydir/"
+      //   location.port = 8080;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function getUqeryStringArgs() {
+        //取得查询字符串兵去掉开头的问号  ?   q=vue-router&qs=AS
+        var qs = location.search.length > 0 ? 
+            location.search.substring(1) : "",
+          //保存数据的对象
+          args = {},
+          //取得每一项
+          items = qs.length ? qs.split("&") : [],  //["q=vue-router","qs=AS"]
+          item = null,
+          name = null,
+          value = null,
+          //在for循环中使用
+          i = 0,
+          len = items.length;
+
+        //逐个将每一项添加到arg对象中  ["q=vue-router","qs=AS"]
+        for (i = 0; i < len; i++) {
+          item = items[i].split("="); //items[0]分割后为 每一项为一个键值对,例: item[0]为q,item[1]为vue-router
+          name = decodeURLCompoent(item[0]);//item[0]为q
+          value = decodeURLComponent(item[i]);//item[1]为vue-router
+          if (name.length) {
+            args[name] = value;  //args[q] = vue-router
+          }
+        }
+        return args;
+      }
+      //假设  "https://www.bing.com/search?q=vue-router&qs=AS";
+      //查询字符串是   "?q=vue-router&qs=AS"
+      var args = getUqeryStringArgs();
+      alert(args["q"]); //vue-router
+      alert(args["qs"]);//AS
+      //可以见得,每个查询字符串的参数都成了返回对象的属性.这样就极大的方便了对每个参数的访问.
+    </script>
+  </body>
+</html>
