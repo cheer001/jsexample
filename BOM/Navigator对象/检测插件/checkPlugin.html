@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       *检测插件(IE除外)
+       *使用plugins数组：
+       *name:插件的名字
+       *description:插件的描述
+       *filename:插件的文件名
+       *length:插件所处理的MIME类型数量
+       */
+
+      /**
+       *循环迭代每个插件并将插件的name与给定的名字进行比较
+       */
+      function hasPlugin(name) {
+        console.log(navigator.plugins);
+        name = name.toLowerCase();
+        for (var i = 0; i < navigator.plugins.length; i++) {
+          if (navigator.plugins[i].name.toLowerCase().indexOf(name) > -1) {
+            return true;
+          }
+        }
+      }
+      //检测Flash
+      alert(hasPlugin("Flash"));
+      //检测QuicTime
+      alert(hasPlugin("QuickTime"));
+
+      /**
+       *在IE中检测插件的唯一方式就是使用专有的ActiveXObject类型，并尝试创建一个特定插件的实例。
+       *IE是以COM对象的方式实现插件的，而COm对象使用唯一标识符来标识。因此，想要检查特定的插件，就必须知道其COM标识符。
+       */
+
+      /**
+       *检测IE中的插件
+       *在函数内部首先会尝试创建一个COM对象的实例。之所以要在trycatch语句中实例化，是因为创建未知COM对象会导致跑出错误。
+       */
+      function hasIEPlugin(name) {
+        try {
+          new ActiveXObject(name);
+          return false;
+        } catch (ex) {
+          return false;
+        }
+      }
+      //检测Flash
+      alert(hasIEPlugin("ShockwaveFlash.ShockwaveFlash"));
+      //检测QuickTime
+      alert(hasIEPlugin("QuickTime.QuickTime"));
+
+      /**
+       *鉴于检测这两种插件的方法差别太大，因此典型的做法是针对每个插件分别创建检测函数
+       */
+      /**
+       *检测所有浏览器中的Flash
+       */
+      function hasFlash() {
+        var result = hasPlugin("Flash");
+        //其他浏览器没有的话会返回undefined，再检测IE中时候存在
+        if (!result) {
+          //如果变量为:[0，null,undefined,"",false]都会返回false  如果result = undefined,if(!false)
+          result = hasIEPlugin("ShockwaveFlash.ShockwaveFlash");
+        }
+        return result;
+      }
+      /**
+       *检测所有浏览器中的QuickTime
+       */
+      function hasQuickTime() {
+        var result = hasPlugin("QuickTime");
+        //其他浏览器没有的话会返回undefined，再检测IE中时候存在
+        if (!result) {
+          //如果变量为:[0，null,undefined,"",false]都会返回false  如果result = undefined,if(!false)
+          result = hasIEPlugin("QuickTime.QuickTime");
+        }
+        return result;
+      }
+      //检测Flash
+      alert(hasFlash());
+      //检测QuickTime
+      alert(hasQuickTime());
+    </script>
+  </body>
+</html>
