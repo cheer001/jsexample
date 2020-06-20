@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      window.onload = function () {
+        var bItems = document.body.childNodes;
+        for (var i = 0; i < bItems.length; i++) {
+          console.log("nodeType:" + bItems[i].nodeType);
+          console.log("nodeName:" + bItems[i].nodeName);
+          console.log("nodeValue:" + bItems[i].nodeValue);
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>h1</h1>
+    <span>span</span>
+    <!--这是一个注释-->
+    123
+    <div class="class1" title="title1"></div>
+    <!-- nodeType:3
+         nodeName:#text
+         nodeValue:
+             
+         nodeType:1
+         nodeName:H1
+         nodeValue:null
+         nodeType:3
+         nodeName:#text
+         nodeValue:
+             
+         nodeType:1
+         nodeName:SPAN
+         nodeValue:null
+         nodeType:3
+         nodeName:#text
+         nodeValue:
+             
+         nodeType:8
+         nodeName:#comment
+         nodeValue:这是一个注释
+         nodeType:3
+         nodeName:#text
+         nodeValue:
+             
+             
+         nodeType:1
+         nodeName:DIV
+         nodeValue:null
+         nodeType:3
+         nodeName:#text
+         nodeValue:
+   -->
+  </body>
+</html>
