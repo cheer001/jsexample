@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form>
+      <input
+        name="textbox1"
+        type="text"
+        size="25"
+        maxlength="50"
+        value="init value"
+      /><br />
+      <textarea rows="5" cols="25">init value</textarea>
+      <!-- <button type="button" name="btnSelect">文本全选</button> -->
+    </form>
+    <script src="../EventUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        var textbox = document.forms[0].elements["textbox1"];
+        // EventUtil.addHandler(textbox, "focus", function (event) {
+        //   event = EventUtil.getEvent(event);
+        //   var target = EventUtil.getTarget(event);
+        //   //全选文本
+        //   target.select();
+        // });
+        /**
+         * select:选择文本框的文本时触发select事件
+         */
+        EventUtil.addHandler(textbox, "select", function () {
+          var selectedText = getSelectedText(textbox);
+          alert(selectedText);
+        });
+      });
+      /**
+       *取得选择的文本：
+            selectionStart:文本选区开头的偏移量
+            selectionEnd:文本选区结尾的偏移量
+            这两个属性保存的都是基于0的数值
+       */
+      /**
+       *IE8及之前的版本不支持这两个属性，提供了另一种解决方案：
+       *    document.selection对象：保存着用户在整个文档范围内选择的文本信息;
+       *    但是无法确定用户选择的是羽绒棉中哪个部分的文本。
+       *    因此，与select事件一起使用.
+       * 要取得选择的文本，首先必须创建一个范围，然后再将文本从其中提取出来：createRange()
+       */
+      function getSelectedText(textbox) {
+        if (typeof textbox.selectionStart == "number") {
+          return textbox.value.substring(
+            textbox.selectionStart,
+            textbox.selectionEnd
+          );
+        } else if (document.select) {
+          return document.selection.createRange().text;
+        }
+      }
+    </script>
+  </body>
+</html>

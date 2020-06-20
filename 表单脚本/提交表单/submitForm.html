@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="myForm" action="www.baidu.com" method="post">
+      <input type="text" autofocus/>
+      <input type="text" value="666" />
+      <fieldset></fieldset>
+      <!-- 通用重置按钮 -->
+      <input type="reset" value="Reset Form" />
+      <!-- 自定义重置按钮 -->
+      <button type="reset">Reset Form</button>
+      <!-- 通用提交按钮 -->
+      <input id="commonSubmit" type="submit" value="Submit Form" />
+      <!-- 自定义提交按钮 -->
+      <button name="submit-btn" type="submit">Submit Form</button>
+      <!-- 图像按钮 -->
+      <input type="image" src="./subnitForm.png" />
+    </form>
+    <script src="../EventUtil.js"></script>
+    <script>
+      window.onload = function () {
+        var form = document.getElementById("myForm");
+        // var commonSubmit = document.getElementById("commonSubmit");
+        // EventUtil.addHandler(commonSubmit, "click", function (event) {
+        //   //提交表单
+        //   form.submit();
+        //   //重置单
+        //   form.reset();
+        // });
+        /*EventUtil.addHandler(form, "submit", function (event) {
+          //取得事件对象
+          event = EventUtil.getEvent(event);
+          //阻止默认事件
+          EventUtil.preventDefault(event);
+        });*/
+        // EventUtil.addHandler(form, "reset", function (event) {
+        //   //取得事件对象
+        //   event = EventUtil.getEvent(event);
+        //   //阻止默认事件
+        //   EventUtil.preventDefault(event);
+        // });
+        EventUtil.addHandler(form, "submit", function (event) {
+          //取得事件对象
+          event = EventUtil.getEvent(event);
+          var target = EventUtil.getTarget(event);
+          //取得提交按钮
+          var btn = target.elements["submit-btn"];
+          //禁用它
+          btn.disabled = true;
+        });
+      };
+    </script>
+  </body>
+</html>

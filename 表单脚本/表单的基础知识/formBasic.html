@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="form1"></form>
+    <form></form>
+    <form name="form2"><input name="blur" type="text" /></form>
+
+    <script>
+      window.onload = function () {
+        //取得id为form1的表单的引用
+        var form1 = document.getElementById("form1");
+        //取得页面中的第二个表单的引用
+        var form2 = document.forms[1];
+        //取得页面中name特性为“form2”的表单的引用
+        var form3 = document.forms["form2"];
+        /**
+         * 在较早的浏览器或者那些支持先后兼容的浏览器中，
+         * 也会把每个设置了name特性的表单作为属性保存在document对象中
+         * 不推荐使用这种方式：1.容易出错2.将来浏览器可能会不支持
+         */
+        var form4 = document.form2;
+        console.log(form1);
+        console.log(form2);
+        console.log(form3);
+        console.log(form4);
+      };
+    </script>
+  </body>
+</html>
