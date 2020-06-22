@@ -21,19 +21,55 @@
     <script>
       EventUtil.addHandler(window, "load", function () {
         var textbox = document.forms[0].elements["textbox1"];
-        // EventUtil.addHandler(textbox, "focus", function (event) {
-        //   event = EventUtil.getEvent(event);
-        //   var target = EventUtil.getTarget(event);
-        //   //全选文本
-        //   target.select();
-        // });
+        // textbox.value = "Hello world!";
+        EventUtil.addHandler(textbox, "focus", function (event) {
+          //   event = EventUtil.getEvent(event);
+          //   var target = EventUtil.getTarget(event);
+          //   //全选文本;
+          //   target.select();
+        });
+        /**
+         *按Ctrl+v就可以触发该事件
+         */
+        EventUtil.addHandler(textbox, "paste", function (event) {
+          event = EventUtil.getEvent(event);
+          var text = EventUtil.getClipboardText(event);
+          textbox.value = text;
+        });
         /**
          * select:选择文本框的文本时触发select事件
          */
-        EventUtil.addHandler(textbox, "select", function () {
-          var selectedText = getSelectedText(textbox);
-          alert(selectedText);
-        });
+        // EventUtil.addHandler(textbox, "select", function () {
+        //   var selectedText = getSelectedText(textbox);
+        //   alert(selectedText);
+        // });
+
+        /**
+         *要看到选择的字符，必须在调用setSelectionRange()之前或者之后立即将焦点设置到文本框
+         */
+        //选择所有文本
+        //   textbox.setSelectionRange(0, textbox.value.length);
+        // selectText(textbox, 0, textbox.value.length);
+        //选择前3个字符
+        // textbox.setSelectionRange(0, 3);
+        // textbox.focus();
+
+        /**
+         *IE8及更早版本支持使用范围选择部分文本：
+            要选择文本框的部分文本，必须使用IE在所有文本框上提供的：
+                (1)createTextRange()创建一个范围，并将其放在恰当位置上。
+                然后，再使用moveStart()和moveEnd()这两个范围方法将范围移动到位。
+                (2)不过，在调用这两个方法以前，还必须使用collape()将范围折叠到文本框的开始位置。
+                此时，moveStart()将范围的起点和终点移动到了相同的位置，只要再给moveEnd()传入要选择的字符总数即可。
+                最后一步，使用范围的select()方法选择文本。
+         */
+        // var range = textbox.createTextRange();
+        // //选择所有的文本
+        // range.collapse(true);
+        // range.moveStart("character", 0);
+        // range.moveEnd("character", textbox.value.length);
+        // range.select();
+        // textbox.focus();
       });
       /**
        *取得选择的文本：
@@ -48,6 +84,9 @@
        *    因此，与select事件一起使用.
        * 要取得选择的文本，首先必须创建一个范围，然后再将文本从其中提取出来：createRange()
        */
+      /**
+       *跨浏览器取得选择的文本
+       */
       function getSelectedText(textbox) {
         if (typeof textbox.selectionStart == "number") {
           return textbox.value.substring(
@@ -57,6 +96,34 @@
         } else if (document.select) {
           return document.selection.createRange().text;
         }
+      }
+      /**
+       *要看到选择的字符，必须在调用setSelectionRange()之前或者之后立即将焦点设置到文本框
+       */
+      /**
+        *IE8及更早版本支持使用范围选择部分文本：
+            要选择文本框的部分文本，必须使用IE在所有文本框上提供的：
+                (1)createTextRange()创建一个范围，并将其放在恰当位置上。
+                然后，再使用moveStart()和moveEnd()这两个范围方法将范围移动到位。
+                (2)不过，在调用这两个方法以前，还必须使用collape()将范围折叠到文本框的开始位置。
+                此时，moveStart()将范围的起点和终点移动到了相同的位置，只要再给moveEnd()传入要选择的字符总数即可。
+                最后一步，使用范围的select()方法选择文本。
+        */
+      /**
+       *实现跨浏览器选择部分文本
+       *
+       *选择部分文本的技术在实现高级文本输入框时很有用，例如提供自动完成建议的文本框就可以使用这种技术
+       */
+      function selectText(textbox, startIndex, stopIndex) {
+        if (textbox.setSelectionRange) {
+          textbox.setSelectionRange(startIndex, stopIndex);
+        } else if (textbox.createTextRange) {
+          range.collapse(true);
+          range.moveStart("character", startIndex);
+          range.moveEnd("character", stopIndex - start);
+          range.select();
+        }
+        textbox.focus();
       }
     </script>
   </body>
