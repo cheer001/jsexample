@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form>
+      <input type="text" name="tel1" id="txtTel1" maxlength="3" />
+      <input type="text" name="tel2" id="txtTel2" maxlength="3" />
+      <input type="text" name="tel3" id="txtTel3" maxlength="4" /><br />
+      <button id="btn1">-</button>
+      <input id="UpDown" type="text" />
+      <button id="btn2">+</button>
+    </form>
+    <script src="../EventUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        var UpDown = document.getElementById("UpDown");
+        var btn1 = document.getElementById("btn1");
+        var btn2 = document.getElementById("btn2");
+        UpDown.value = 1;
+        EventUtil.addHandler(btn1, "click", function () {
+          event = EventUtil.getEvent(event);
+          // var target = EventUtil.getTarget(event);
+          UpDown.value = UpDown.stepDown();
+        });
+        EventUtil.addHandler(btn2, "click", function () {
+          event = EventUtil.getEvent(event);
+          // var target = EventUtil.getTarget(event);
+          UpDown.value = UpDown.stepUp();
+        });
+      });
+      (function () {
+        function tabForward(event) {
+          event = EventUtil.getEvent(event);
+          var target = EventUtil.getTarget(event);
+          if (target.value.length == 3) {
+            var form = target.form;
+
+            for (var i = 0, len = form.elements.length; i < len; i++) {
+              if (form.elements[i] == target) {
+                if (form.elements[i + 1]) {
+                  form.elements[i + 1].focus();
+                }
+              }
+              return;
+            }
+          }
+        }
+
+        var textbox1 = document.getElementById("txtTel1");
+        var textbox2 = document.getElementById("txtTel2");
+        var textbox3 = document.getElementById("txtTel3");
+
+        EventUtil.addHandler(textbox1, "keyup", tabForward);
+        EventUtil.addHandler(textbox2, "keyup", tabForward);
+        EventUtil.addHandler(textbox3, "keyup", tabForward);
+      })();
+    </script>
+  </body>
+</html>

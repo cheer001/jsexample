@@ -63,6 +63,27 @@
  *  returnValue:默认值为true，但将其设置为false就可以 取消事件的默认行为
  *  cancelBubble:默认值为false,但将其设置为true就可以 取消事件冒泡
  */
+//-------------------------------------剪贴板--------------------------------------
+/**
+ * 使用clipboardData对象,访问粘贴板中的数据
+ *  在IE中，这个对象是window中的属性；
+ *  而在Firefox4+,Safari和Chrome中，这个对象是相应event对象的属性。
+ *  但是，在Firefox4+,Safari和Chrome中，只有在处理剪贴板期间clipboardData对象才有效，这是为了防止对剪贴板的未授权访问；
+ *  在IE中则可以随时访问clipboardData对象。
+ * 注：为了确保跨浏览器的兼容性，最好只在发生剪贴板事件期间使用这个对象。
+ */
+/**
+ * clipboardData对象有三个方法：
+ *    getData():用于从剪贴板中获取数据：一个参数:(1)即要取得的数据格式(),
+ *    setData()：两个参数(1)数据类型，(2)放在剪贴板中的文本。
+ *      第一个参数IE一样，但在Safari和Chrome中的setData()方法不能识别“text”类型。
+ *      这两个浏览器在成功将文本放好剪贴板中后，都会返回true；否则，返回false
+ *    clearData()
+ *
+ * 在IE中，有两种数据格式：“text”和“URL”.
+ * 在Firefox4+,Safari和Chrome中,这个参数是一种MIME类型(例:'text/javascript'),
+ *  不过可以用“text”代表“text/plain”
+ */
 var EventUtil = {
   addHandler: function (element, type, handler) {
     if (element.addEventListener) {
@@ -100,6 +121,17 @@ var EventUtil = {
       event.stopPropagation();
     } else {
       event.cancelBubble = true;
+    }
+  },
+  getClipboardText: function (event) {
+    var clipboardData = event.clipboardData || window.clipboardData;
+    return clipboardData.getData("text");
+  },
+  setClipboardText: function (event, value) {
+    if (event.clipboardData) {
+      return event.clipboardData.setData("text/plain", value);
+    } else if (window.clipboardData) {
+      return window.clipboardData.setData("text", value);
     }
   },
 };
