@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form>
+      <div class="editable" id="richedit" contenteditable></div>
+      <input type="hidden" name="comments" />
+      <!-- <iframe
+        name="richedit"
+        style="height: 300px; width: 300px;"
+        src="../富文本编辑/WYSIWYG.html"
+      >
+      </iframe> -->
+      <button type="submit" id="btnSubmit">提交</button>
+    </form>
+    <script src="../EventUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        // frames["richedit"].document.designMode = "on";
+        // //转换为粗体文本
+        // frames["richedit"].document.execCommand("bold", false, "<h1>");
+        /**
+         *由于富文本是使用iframe而非表单控件实现的，
+         *    因此富文本编辑器中的HTML不会被自动提交给服务器，
+         *    而需要我们手工来提取并提交HTML。
+         *为此，通常可以添加一个隐藏的表单字段，让它的值等于从iframe中提取出来的HTML
+         */
+        var btnSubmit = document.getElementById("btnSubmit");
+        EventUtil.addHandler(btnSubmit, "submit", function (event) {
+          console.log(target);
+          event = EventUtil.getEvent(event);
+          var target = EventUtil.getTarget(event);
+          target.elements["comments"].value =
+            frame["richedit"].document.body.innerHTML;
+        });
+      });
+    </script>
+  </body>
+</html>
