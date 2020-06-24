@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var xhr = createXHR();
+        var url = "example.php";
+        //添加参数
+        url = addURLParam(url, "name", "Nicholas");
+        url = addURLParam(url, "book", "Professional JavaScript");
+        //必须在调用open()方法之前指定onreadystatechange事件处理程序才能确保跨浏览器兼容性
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            //200作为成功的标志
+            //304表示请求的资源没有被修改，可以直接使用浏览器中缓存的版本
+            if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+              alert(xhr.responseText);
+            } else {
+              alert("Requet was unsuccessful:" + xhr.status);
+            }
+          }
+        };
+        //初始化请求
+        xhr.open("get", url, false);
+        //...
+      };
+      /**
+       *兼容IE7以前版本及更高版本
+       *    首先检测原生XHR对象时候存在，
+       *        如果存在则返回它的实例。
+       *        如果不存在则检测ActiveX对象。
+       *        如果都不存在则抛出一个错误。
+       */
+      function createXHR() {
+        if (typeof XMLHttpRequest != "undefined") {
+          return new XMLHttpRequest();
+        } else if (typeof ActiveXObject != "undefined") {
+          if (typeof arguments.callee.activeXString != "string") {
+            var versions = [
+                "MSXML2.XMLHttp.5.0",
+                "MSXML2.XMLHttp.3.0",
+                "MSXML2.XMLHttp",
+              ],
+              i,
+              len;
+            for (let i = 0, len = versions.length; i < len; i++) {
+              try {
+                new ActiveXObject(versions[i]);
+                arguments.callee.activeXString = versions[i];
+                break;
+              } catch (ex) {
+                console.log(ex.message);
+              }
+            }
+          }
+          return new ActiveXObject(arguments.callee.activeXString);
+        } else {
+          throw new Error("No XHR object available");
+        }
+      }
+
+      /**
+       *解决get请求拼接字符串经常出现的：
+       *    查询字符串格式问题：查询字符串中每个参数的名称和值都必须使用
+       *     encodeURIComponent()进行编码，
+       *     然后才能放到URL的末尾；而且所有名值对都必须使用（&）分隔
+       */
+      function addURLParam(url, name, value) {
+        url += url.indexOf("?") == -1 ? "?" : "&";
+        url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+        return url;
+      }
+    </script>
+  </body>
+</html>

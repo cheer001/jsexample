@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="status"></div>
+    <script>
+      window.onload = function () {
+        var xhr = createXHR();
+        var url = "https://api.coindesk.com/v1/bpi/currentprice.json";
+        //添加参数
+        // url = addURLParam(url, "name", "Nicholas");
+        // url = addURLParam(url, "book", "Professional JavaScript");
+        //使用onload：在响应数据接收完毕后触发， 替换onreadystatechange事件处理程序
+        xhr.onload = function () {
+          //200作为成功的标志
+          //304表示请求的资源没有被修改，可以直接使用浏览器中缓存的版本
+          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+            alert(xhr.responseText);
+          } else {
+            alert("Requet was unsuccessful:" + xhr.status);
+          }
+        };
+        //给用户添加进度指示器
+        /**
+         *onprogress接收一个event对象，其target是XHR对象，
+         *      但是包含着其他三个额外的属性：
+         *          lengthComputable:表示进度信息是否可用的布尔值
+         *          position:表示已经接收的字符数
+         *          totalSize：表示根据Content-Length响应头部确实的预期字节数
+         * 为确保正确执行，必须在open()方法之前添加onprogress事件处理程序
+         */
+        xhr.onprogress = function (event) {
+          var divStatus = document.getElementById("status");
+          if (event.lengthComputable) {
+            divStatus.innerHTML =
+              "Received:" +
+              event.position +
+              "\t,of:" +
+              event.totalSize +
+              "\tbytes";
+          }
+        };
+        //初始化请求
+        xhr.open("get", url, true);
+        //重写服务器返回的MIME类型(例：text/plain)
+        //强迫XHR对象将相应当做XML而非纯文本来处理，必须在send()之前调用
+        // xhr.overrideMimeType("text/xml");
+        // xhr.timeout = 1000; //将超时时间设置为一秒钟（仅适用于IE8）
+        // xhr.ontimeout = function () {
+        //   alert("Request did not return in a second.");
+        // };
+        xhr.send(null);
+      };
+      /**
+       *兼容IE7以前版本及更高版本
+       *    首先检测原生XHR对象时候存在，
+       *        如果存在则返回它的实例。
+       *        如果不存在则检测ActiveX对象。
+       *        如果都不存在则抛出一个错误。
+       */
+      function createXHR() {
+        if (typeof XMLHttpRequest != "undefined") {
+          return new XMLHttpRequest();
+        } else if (typeof ActiveXObject != "undefined") {
+          if (typeof arguments.callee.activeXString != "string") {
+            var versions = [
+                "MSXML2.XMLHttp.5.0",
+                "MSXML2.XMLHttp.3.0",
+                "MSXML2.XMLHttp",
+              ],
+              i,
+              len;
+            for (let i = 0, len = versions.length; i < len; i++) {
+              try {
+                new ActiveXObject(versions[i]);
+                arguments.callee.activeXString = versions[i];
+                break;
+              } catch (ex) {
+                console.log(ex.message);
+              }
+            }
+          }
+          return new ActiveXObject(arguments.callee.activeXString);
+        } else {
+          throw new Error("No XHR object available");
+        }
+      }
+
+      /**
+       *模仿表单提交：
+       *  首先将Content-Tpye头部设置为application/x-www-form-urlencode,也就是表单提交时候的内容类型。
+       *  其次是以适当格式创建一个字符串：serialize()
+       */
+      function submitData() {
+        var xhr = createXHR();
+        //必须在调用open()方法之前指定onreadystatechange事件处理程序才能确保跨浏览器兼容性
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            //200作为成功的标志
+            //304表示请求的资源没有被修改，可以直接使用浏览器中缓存的版本
+            if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+              alert(xhr.responseText);
+            } else {
+              alert("Requet was unsuccessful:" + xhr.status);
+            }
+          }
+        };
+
+        xhr.open("post", "postexample.php", true);
+        var form = document.getElementById("user-info");
+        //使用FormData的方便之处在于不必明确的在XHR对象上设置请求头部，
+        //XHR对象能够识别传入的数据类型是FormData的实例，并配置适当的头部
+        xhr.send(new FormData(form));
+      }
+    </script>
+  </body>
+</html>
