@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var book = {
+          title: "Professional JavaScript",
+          authors: ["Nicholas c . Zakas"],
+          edition: 3,
+          year: 2011,
+          someBook: {
+            //会导致someBook对象变为null
+            toJSON: function () {
+              return undefined;
+            },
+          },
+
+          toJSON: function () {
+            return this.title; //表示序列化结果只包含title属性
+            //     return undefined; //会导致book对象变为undefined
+          },
+        };
+        /**
+         *传入一个参数：
+         *      表示把JavaScript对象序列化成JSON字符串
+         */
+        var jsonText = JSON.stringify(book);
+        // 去掉所有缩进后的结果;
+        console.info(jsonText); //打印：{"title":"Professional JavaScript","authors":["Nicholas c . Zakas"],"edition":3,"year":2011}
+        /**
+         *传入两个参数：
+         *      第二个参数可以是：
+                    数组：
+                        那么JSON。stringify()的结果中只包含【数组中列出的属性】
+                    函数：
+                        传入的参数接受两个参数：
+                            (1)属性(键)名【属性名只能是字符串，如果值并非键值对结构的值时，属性名可以是空字符串】，
+                            (2)属性值
+                    注：如果函数返回了undefined,那么相应的属性就会被省略。
+         */
+        // var jsonText = JSON.stringify(book, ["title", "edition"]);
+        // //只有第二个参数(数组中列出的属性被打印出来了)
+        // console.info(jsonText); //打印：{"title":"Professional JavaScript","edition":3}
+        // var jsonText = JSON.stringify(book, function (key, value) {
+        //   switch (key) {
+        //     case "authors":
+        //       return value.join(",");
+        //     case "year":
+        //       return undefined;
+        //     case "edition":
+        //       return 5;
+        //     default:
+        //       return value;
+        //   }
+        // });
+        // //没有返回year是因为返回的undefined,没有选项的属性返回原始值，有switch选项的值返回return的值
+        // console.info(jsonText); //打印：{"title":"Professional JavaScript","authors":"Nicholas c . Zakas","edition":5}
+        /**
+         *传入三个参数：
+         *      表示控制结果中的缩进和空白符
+         */
+        // var jsonText = JSON.stringify(
+        //   book,
+        //   function (key, value) {
+        //     switch (key) {
+        //       case "authors":
+        //         return value.join(",");
+        //       case "year":
+        //         return undefined;
+        //       case "edition":
+        //         return 5;
+        //       default:
+        //         return value;
+        //     }
+        //   },
+        //   4
+        // );
+        // //没有返回year是因为返回的undefined,没有选项的属性返回原始值，有switch选项的值返回return的值
+        // console.info(jsonText);
+        //打印：  {
+        //      "title": "Professional JavaScript",
+        //      "authors": "Nicholas c . Zakas",
+        //      "edition": 5
+        // }
+      };
+    </script>
+  </body>
+</html>

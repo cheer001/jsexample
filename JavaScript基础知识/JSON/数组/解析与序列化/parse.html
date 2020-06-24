@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var book = {
+          title: "Professional JavaScript",
+          authors: ["Nicholas c . Zakas"],
+          edition: 3,
+          year: 2011,
+          releaseDate: new Date(2011, 11, 1),
+        };
+        var jsonText = JSON.stringify(book);
+        /**
+         *parse():接受一个参数:
+         *              (1):需要解析的JSON字符串
+         * 将JSON字符串解析为JavaScipt对象
+         */
+        var bookCopy = JSON.parse(jsonText);
+        console.info(bookCopy);
+        //打印： {title: "Professional JavaScript", authors: Array(1), edition: 3, year: 2011, releaseDate: "2011-11-30T16:00:00.000Z"}
+        // console.info(bookCopy.releaseDate.getFullYear());//因为是字符串，没有该方法
+        //打印：parse.html:27 Uncaught TypeError: bookCopy.releaseDate.getFullYear is not a function
+        /**
+         *parse():接受两个参数:
+         *              (1):需要解析的JSON字符串
+         *              (2):还原函数(reviver):接受两个参数：(1)键(2)值
+         * 如果还原函数返回undefined,则表示要从结果中删除相应的键;
+         * 如果返回其他值，则将该值插入到结果中。
+         *场景：将日期字符串转换为Date对象书，经常要用到还原函数。
+         *
+         */
+        var bookCopy = JSON.parse(jsonText, function (key, value) {
+          if (key == "releaseDate") {
+            return new Date(value);
+          } else {
+            return value;
+          }
+        });
+        console.info(bookCopy);
+        //打印：{title: "Professional JavaScript", authors: Array(1), edition: 3, year: 2011, releaseDate: Thu Dec 01 2011 00:00:00 GMT+0800 (中国标准时间)}
+        console.info(bookCopy.releaseDate.getFullYear());
+        //打印：2011
+      };
+    </script>
+  </body>
+</html>
