@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var url = "https://api.coindesk.com/v1/bpi/currentprice.json";
+        var client = createStreamingClient(
+          url,
+          function (data) {
+            alert("Received: " + data);
+          },
+          function (data) {
+            alert("Done");
+          }
+        );
+      };
+      function createStreamingClient(url, progress, finished) {
+        var xhr = new XMLHttpRequest(),
+          received = 0;
+        xhr.open("get", url, true);
+        xhr.onreadystatechange = function () {
+          var result;
+          if (xhr.readyState == 3) {
+            //只取得最新数据并调整计数器
+            result = xhr.responseText.substring(received);
+            recevied += result.length;
+            //调用progress回调函数
+            progress(result);
+          } else if (xhr.readyState == 4) {
+            finished(xhr.responseText);
+          }
+        };
+        xhr.send(null);
+        return xhr;
+      }
+    </script>
+  </body>
+</html>
