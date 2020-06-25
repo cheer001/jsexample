@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        /**
+         *IE8中引入了XDR类型，与XHR很相似，但能实现安全可靠的跨域通信
+         *  不同之处：
+         *          (1):cookie不会随请求发送，也不会随响应返回
+         *          (2):只能设置请求头部信息中的Content-Type字段
+         *          (3):不能访问响应头部信息
+         *          (4):只之处Get和Post请求
+         *   open():两个尝试(1)请求的类型(2)URL
+         */
+        //  var xdr = nre XDomainRequest();
+        xdr.abort(); //终止请求
+        xdr.onload = function () {
+          alert(xdr.responseText);
+        };
+        //检测错误
+        xdr.onError = function () {
+          alert("An error accurred");
+        };
+        //设置超时
+        xdr.timeout = 1000;
+        xdr.ontimeout = function () {
+          alert("Request took too long");
+        };
+        //get请求
+        // xdr.open("get", "http://www.somewhere-else.com/page/");
+        // xdr.send(null);
+        //post请求
+        xdr.open("post", "http://www.somewhere-else.com/page/");
+        xdr.contentType = "application/x-www-form-urlencoded";
+        xdr.send("name1=value1&name2=value2");
+      };
+    </script>
+  </body>
+</html>

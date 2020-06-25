@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var request = createCORSRequest(
+          "get",
+          "https://api.coindesk.com/v1/bpi/currentprice.json"
+        );
+        if (request) {
+          request.onload = function () {
+            //对request.responseText进行处理
+            alert(request.responseText);
+          };
+          request.send();
+        }
+      };
+      /**
+       *跨浏览器的CORS
+       */
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+    </script>
+  </body>
+</html>

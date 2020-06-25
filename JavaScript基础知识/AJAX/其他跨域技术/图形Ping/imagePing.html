@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var img = new Image();
+        //将onload和onerror事件处理程序指定为同一个函数，这样无论是什么响应，只要请求完成，就能得到通知
+        img.onload = img.onerror = function () {
+          alert("Done");
+        };
+        img.src = "http://www.example.com/test?name=Nicholas";
+      };
+    </script>
+  </body>
+</html>

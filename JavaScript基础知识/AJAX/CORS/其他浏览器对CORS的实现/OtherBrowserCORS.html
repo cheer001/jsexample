@@ -7,7 +7,25 @@
   </head>
   <body>
     <script>
-      window.onload = function () {};
+      window.onload = function () {
+        var xhr = createXHR();
+        //必须在调用open()方法之前指定onreadystatechange事件处理程序才能确保跨浏览器兼容性
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            //200作为成功的标志
+            //304表示请求的资源没有被修改，可以直接使用浏览器中缓存的版本
+            if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+              alert(xhr.responseText);
+            } else {
+              alert("Requet was unsuccessful:" + xhr.status);
+            }
+          }
+        };
+        //get请求
+        xhr.open("get", "http://www.somewhere-else.com/page/", true);
+        xhr.send(null);
+      };
+
       /**
        *兼容IE7以前版本及更高版本
        *    首先检测原生XHR对象时候存在，
@@ -41,39 +59,6 @@
         } else {
           throw new Error("No XHR object available");
         }
-      }
-
-      /**
-       *模仿表单提交：
-       *  首先将Content-Tpye头部设置为application/x-www-form-urlencode,也就是表单提交时候的内容类型。
-       *  其次是以适当格式创建一个字符串：serialize()
-       */
-      function submitData() {
-        var xhr = createXHR();
-        //必须在调用open()方法之前指定onreadystatechange事件处理程序才能确保跨浏览器兼容性
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState == 4) {
-            //200作为成功的标志
-            //304表示请求的资源没有被修改，可以直接使用浏览器中缓存的版本
-            if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
-              alert(xhr.responseText);
-            } else {
-              alert("Requet was unsuccessful:" + xhr.status);
-            }
-          }
-        };
-
-        xhr.open(
-          "post",
-          "https://api.coindesk.com/v1/bpi/currentprice.json",
-          true
-        );
-        xhr.setRequestHeader(
-          "Content-Tpye",
-          "application/x-www-form-urlencode"
-        );
-        var form = document.getElementById("user-info");
-        xhr.send(serialize(form)); //将表单中的数据序列化之后发送给服务器
       }
     </script>
   </body>

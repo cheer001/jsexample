@@ -9,10 +9,10 @@
     <script>
       window.onload = function () {
         var xhr = createXHR();
-        var url = "example.php";
+        var url = "https://api.coindesk.com/v1/bpi/currentprice.json";
         //添加参数
-        url = addURLParam(url, "name", "Nicholas");
-        url = addURLParam(url, "book", "Professional JavaScript");
+        // url = addURLParam(url, "name", "Nicholas");
+        // url = addURLParam(url, "book", "Professional JavaScript");
         //必须在调用open()方法之前指定onreadystatechange事件处理程序才能确保跨浏览器兼容性
         xhr.onreadystatechange = function () {
           if (xhr.readyState == 4) {

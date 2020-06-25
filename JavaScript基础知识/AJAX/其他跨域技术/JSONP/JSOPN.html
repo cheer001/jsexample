@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var script = document.createElement("script");
+        script.src =
+          "https://api.coindesk.com/v1/bpi/currentprice.json?callback=handleResponse";
+        document.body.insertBefore(script, document.body.firstChild);
+      };
+      function handleResponse(response) {
+        alert(
+          "You're at IP address " +
+            response.ip +
+            ", which is in " +
+            response.city +
+            ", " +
+            response.region_name
+        );
+      }
+    </script>
+  </body>
+</html>
