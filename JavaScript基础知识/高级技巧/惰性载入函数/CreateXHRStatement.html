@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        /**
+         *这是第二种实现惰性载入的方式：
+         *      技巧：创建一个匿名、自执行的函数，用以确定应该使用哪一个函数实现。
+         *     在声明函数时就指定适当的函数。
+         *     这样，第一次调用函数时就不会损失性能了，而在代码首次加载时会损失一点性能。
+         *跟方式一实现思路一样
+         */
+        var createXHR = (function () {
+          if (typeof XMLHttpRequest != "undefined") {
+            return function () {
+              return new XMLHttpRequest();
+            };
+          } else if (typeof ActiveXObject != "undefined") {
+            return function () {
+              if (typeof arguments.callee.activeXString != "string") {
+                var versions = [
+                    "MSXML2.XMLHttp.5.0",
+                    "MSXML2.XMLHttp.3.0",
+                    "MSXML2.XMLHttp",
+                  ],
+                  i,
+                  len;
+                for (let i = 0, len = versions.length; i < len; i++) {
+                  try {
+                    new ActiveXObject(versions[i]);
+                    arguments.callee.activeXString = versions[i];
+                    break;
+                  } catch (ex) {
+                    console.log(ex.message);
+                  }
+                }
+              }
+              return new ActiveXObject(arguments.callee.activeXString);
+            };
+          } else {
+            return function () {
+              throw new Error("No XHR object available");
+            };
+          }
+        })();
+      };
+    </script>
+  </body>
+</html>

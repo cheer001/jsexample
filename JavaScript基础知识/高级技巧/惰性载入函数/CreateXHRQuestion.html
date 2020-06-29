@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      //它所存在的问题就是if语句每次都要执行，影响执行性能，效率
+      /**
+       *兼容IE7以前版本及更高版本
+       *    首先检测原生XHR对象时候存在，
+       *        如果存在则返回它的实例。
+       *        如果不存在则检测ActiveX对象。
+       *        如果都不存在则抛出一个错误。
+       */
+      function createXHR() {
+        if (typeof XMLHttpRequest != "undefined") {
+          return new XMLHttpRequest();
+        } else if (typeof ActiveXObject != "undefined") {
+          if (typeof arguments.callee.activeXString != "string") {
+            var versions = [
+                "MSXML2.XMLHttp.5.0",
+                "MSXML2.XMLHttp.3.0",
+                "MSXML2.XMLHttp",
+              ],
+              i,
+              len;
+            for (let i = 0, len = versions.length; i < len; i++) {
+              try {
+                new ActiveXObject(versions[i]);
+                arguments.callee.activeXString = versions[i];
+                break;
+              } catch (ex) {
+                console.log(ex.message);
+              }
+            }
+          }
+          return new ActiveXObject(arguments.callee.activeXString);
+        } else {
+          throw new Error("No XHR object available");
+        }
+      }
+    </script>
+  </body>
+</html>

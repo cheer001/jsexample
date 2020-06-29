@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button type="button" id="my-btn">点我会弹框</button>
+    <script src="../../EventUtil.js"></script>
+    <script>
+      window.onload = function () {
+        // console.info(add(2, 3));
+        // console.info(curriedAdd(3));
+        // var curriedAdd = curry(add, 5);
+        // console.info(curriedAdd(3));
+        var curriedAdd = curry(add, 5, 12); //把5和12传入add函数中
+        console.info(curriedAdd());
+      };
+      function add(num1, num2) {
+        return num1 + num2;
+      }
+      //   function curriedAdd(num2) {
+      //     return add(5, num2);
+      //   }
+      /**
+       * 柯里化函数，动态创建：
+       *    调用另一个函数并为它传入要柯里化的函数和必要参数
+       */
+      function curry(fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        console.error(args); //(2) [5, 12]
+        return function () {
+          var innerArgs = Array.prototype.slice.call(arguments);
+          console.error(innerArgs); //[]
+          var finalArgs = args.concat(innerArgs);
+          console.error(finalArgs); //(2) [5, 12]
+          return fn.apply(null, finalArgs);
+        };
+      }
+      /**
+       * 构造更复杂的bind()函数
+       *    curry仅仅接受一个要包裹的函数作为参数，bind()同时接受函数和一个object对象
+       *    这表示给被绑定的函数的参数是从第三个开始而不是第二个，这就要改slice()d的第一处。
+       *           另一处更改是在倒数第3行将object对象传给apply()。
+       * 当使用bind()时，它会返回绑定到给定环境的函数，并且可能它其中某些函数参数已经被设好。
+       *
+       * 场景：在除了event对象再给额外事件处理函数传递参数时，这非常有用
+       * **/
+      EventUtil.addHandler(window, "load", function () {
+        //例如
+        var handler = {
+          message: "Event handler",
+          handleClick: function (name, event) {
+            alert(this.message + ":" + name + ":" + event.type);
+          },
+        };
+        var btn = document.getElementById("my-btn");
+        EventUtil.addHandler(
+          btn,
+          "click",
+          bind(handler.handleClick, handler, "my-btn")
+        );
+      });
+      function bind(fn, context) {
+        //arguments.slice是错误的，，因为arguments是类数组对象，并没有slice这个方法。
+        //Array.prototype.slice.call()能把类数组对象转化成数组
+        console.log(arguments);
+        var args = Array.prototype.slice.call(arguments, 2); //调用类数组(arguments)的slice(2)
+        console.error(args);
+        return function () {
+          var innerArgs = Array.prototype.slice.call(arguments);
+          console.error(innerArgs);
+          var finalArgs = args.concat(innerArgs);
+          console.error(finalArgs);
+          return fn.apply(context, finalArgs);
+        };
+      }
+    </script>
+  </body>
+</html>

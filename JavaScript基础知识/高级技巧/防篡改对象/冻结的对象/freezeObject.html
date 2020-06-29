@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        /**
+         * 最严格的放篡改级别是冻结对象。
+         *      冻结的对象既不可扩展，又是密封的，而且对象数据属性的[[Writable]]特性会被设置为false
+         *      如果定义[[Set]]函数,访问器属性仍然是可写的
+         * **/
+        var person = { name: "Nicholas" };
+        //使用isFrozen
+        console.log(Object.isFrozen(person)); //false
+        //冻结对象之后增，删，改都没有任何反应
+        Object.freeze(person);
+        console.log(Object.isFrozen(person)); //true
+        person.age = 29;
+        console.log(person.age); //undefined
+        delete person.name;
+        console.log(person.name); //Nicholas
+        person.name = "Greg";
+        console.log(person.name); //Nicholas
+      };
+    </script>
+  </body>
+</html>

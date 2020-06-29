@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        /**
+         * 默认情况下所有对象都是可扩展的（任何时候都可以向对象中添加属性和方法）
+         *     即，第一行已经定义好一个对象了，但是第二行还是可以添加属性age
+         *      使用：preventExtendsions(obj):阻止给对象添加属性和方法
+         * **/
+        var person = { nam: "Nicholas" };
+        //使用isExtensible()方法可以确定对象是否可以扩展
+        console.log(Object.isExtensible(person)); //true
+        //阻止了扩展之后，增 没有任何反应
+        Object.preventExtensions(person);
+        console.log(Object.isExtensible(person)); //false
+        person.age = 29; //undefined
+        console.info(person);
+      };
+    </script>
+  </body>
+</html>

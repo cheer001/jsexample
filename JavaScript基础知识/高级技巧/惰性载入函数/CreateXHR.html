@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      //它所存在的问题就是if语句每次都要执行，影响执行性能，效率
+      /**
+       *兼容IE7以前版本及更高版本
+       *    首先检测原生XHR对象时候存在，
+       *        如果存在则返回它的实例。
+       *        如果不存在则检测ActiveX对象。
+       *        如果都不存在则抛出一个错误。
+       */
+      /**
+       *解决：采用惰性载入，重写createXHR()
+       *      在这个惰性载入的createXHR()中，if语句的每一个分支都会为createXHR变量赋值，有效覆盖了原有的函数。
+       *      最后一步便是调用新赋值的函数。
+       *      下一次调用createXHR()的时候，就会直接调用被分配的函数，这样就不用再次执行if语句了
+       */
+      function createXHR() {
+        if (typeof XMLHttpRequest != "undefined") {
+          createXHR = function () {
+            return new XMLHttpRequest();
+          };
+        } else if (typeof ActiveXObject != "undefined") {
+          createXHR = function () {
+            if (typeof arguments.callee.activeXString != "string") {
+              var versions = [
+                  "MSXML2.XMLHttp.5.0",
+                  "MSXML2.XMLHttp.3.0",
+                  "MSXML2.XMLHttp",
+                ],
+                i,
+                len;
+              for (let i = 0, len = versions.length; i < len; i++) {
+                try {
+                  new ActiveXObject(versions[i]);
+                  arguments.callee.activeXString = versions[i];
+                  break;
+                } catch (ex) {
+                  console.log(ex.message);
+                }
+              }
+            }
+            return new ActiveXObject(arguments.callee.activeXString);
+          };
+        } else {
+          createXHR = function () {
+            throw new Error("No XHR object available");
+          };
+        }
+        return createXHR();
+      }
+    </script>
+  </body>
+</html>

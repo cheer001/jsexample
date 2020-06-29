@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        /**
+         * 密封对象不可扩展，而且已有成员的[[Configurable]]特性被设置为false
+         *      意味着不能删除属性和方法，因为不能使用Object.defineProperty()把属性修改为访问器，或者相反。
+         *  属性值是可以修改的
+         * **/
+        var person = { name: "Nicholas" };
+        //使用isSealed()：确定对象时候被密封了
+        console.log(Object.isSealed(person)); //false
+        //密封对象之后增，删都没有任何反应
+        Object.seal(person);
+        console.log(Object.isSealed(person)); //true
+        person.age = 29;
+        console.log(person.age); //undefined
+        delete person.name;
+        console.log(person.name); //Nicholas
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button type="button" id="my-btn">点我会弹框</button>
+    <script src="../../EventUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        var handler = {
+          message: "Event handled",
+          handleClick: function (event) {
+            alert(this.message);
+          },
+        };
+        var btn = document.getElementById("my-btn");
+        /**
+         * 此时点击弹出 undefined？？？不会应该弹出handler对象的message的“Event handled”吗？
+         *      因为：这个问题在于没有老村handler.handleClick()的环境，所以this对象最后指向了DOM按钮而非handler
+         * 注：IE8中，this指向window
+         */
+        // EventUtil.addHandler(btn, "click", handler.handleClick);
+        /**
+         * 使用闭包解决:
+         *      缺点：创建闭包可能会令代码变得难以理解和调试。
+         *    因此，很多JavaScript库实现了一个可以将函数绑定到指定环境的函数。
+         *          这个函数一般都叫bind()
+         *
+         */
+        // EventUtil.addHandler(btn, "click", function (event) {
+        //   handler.handleClick(event);
+        // });
+
+        // EventUtil.addHandler(btn, "click", bind(handler.handleClick, handler));
+        //ECMAScript5为所有函数定义了一个原生的bind()方法，不用再自己定义了
+        EventUtil.addHandler(btn, "click", handler.handleClick.bind(handler));
+      });
+      /**
+       * bind():
+       *  两个参数：
+       *      (1)一个函数(2)一个环境
+       * 并返回一个在给定环境中调用给定函数的函数，并将所有参数原封不动的传过去
+       *     此函数看起来简单，实际上非常强大：
+       *          在bind()中创建了一个闭包，闭包使用apply()调用传入的函数，
+       *          并给apply（）传递context对象和参数
+       */
+      function bind(fn, context) {
+        return function () {
+          return fn.apply(context, arguments);
+        };
+      }
+    </script>
+  </body>
+</html>

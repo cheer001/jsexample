@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        //当使用new调用时，构造函数内用到的this对象用到的this对象会指向 新创建的对象实例
+        //使用new时，会创建一个新的Person对象，同时给它分配属性(person{name:"gerry"})
+        var person = new Person("gerry");
+        console.info(person); //Person {name: "gerry"}
+        //如果没有使用new，this会映射到全局对象window上（像这样声明的变量都在window执行环境中），导致错误对象属性的意外添加
+        var person = Person("gerry");
+        console.info(person); //undefined
+        console.info(window.name); //gerry
+      };
+      function Person(name) {
+        this.name = name;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        //-----------------------------------------
+        //使用原型链解决这个问题
+        Rectangle.prototype = new Polygon();
+        // Rectangle.prototype = Polygon();
+        //-----------------------------------------
+
+        var rect = new Rectangle(5, 10);
+        /**
+         *为什么这里是undefined呢？不是借用了Polygon构造函数之后应该有了他的全部属性了吗？
+         *    因为：Polygon构造函数是安全的
+         *       (Polygon.call(this)时this代表Rectangle，而Rectangle的实例不等于Polygon)，
+         *        所以新new了一个Polygon  也就是Polygon构造函数中的else,
+         *        因此Rectangle构造函数中的this并没有得到增长
+         *        同时Polygon.call()返回的值也没有用到，所以Rectangle实例中就不会有sides属性
+         */
+        //此时用rect.sides会去Rectangle.prototype，也就是Polygon的构造函数中找到sides属性，rect这个实例也相当于Polygon的实例
+        console.log(rect.sides); //undefined    ,解决后就变为2了（Polygon.call(this, 2);）传入的
+        console.log(rect.width); //5
+        console.log(rect.height); //10
+      };
+
+      /**
+       *构造函数窃取模式
+       */
+      function Polygon(sides) {
+        if (this instanceof Polygon) {
+          this.sides = sides;
+          this.getArea = function () {
+            return 0;
+          };
+        } else {
+          return new Polygon(sides);
+        }
+      }
+      function Rectangle(width, height) {
+        /**
+         *Polygon.call的意思就是使用Polygon代替本构造函数中的this对象，后面的2表示给Polygon传入参数值2
+         *   Rectangle就有了Polygon中的所有属性和方法，相当于Rectangle继承了Polygon
+         * 注：Polygon.call()就相当于调用了此构造函数
+         */
+        Polygon.call(this, 2);
+        this.width = width;
+        this.height = height;
+        this.getArea = function () {
+          return this.width * this.height;
+        };
+      }
+    </script>
+  </body>
+</html>
