@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 借用构造函数（也叫伪造对象或经典继承）：
+       *      基本思想：
+       *          在子类型构造函数的内部调用超类型构造函数。
+       *      注意：
+       *          函数只不过是在特定环境中执行代码的对象，
+       *          因此，通过使用apply()或者call()也可以在(将来)新创建的对象上执行构造函数
+       *    直接就解决了原型链存在的两个问题（引用和传参）
+       *
+       *
+       * 借用构造函数存在的问题：
+       *        又扯回去了，构造函数中声明的方法，
+       *        每次调用都会实例化一次的问题(因为函数也是对象，每创建一个对象就会开辟一块内存)，
+       *        没有到达共享。
+       *    使用组合继承解决此问题
+       *
+       * **/
+      function SuperType(name) {
+        //添加属性
+        this.name = name;
+
+        this.colors = ["red", "blue", "green"];
+      }
+      function SubType(name) {
+        /**
+         * 这里借调了超类型的构造函数
+         *    通过call()或apply()方法实际上是在新创建的SubType实例的环境下调用了SuperType构造函数。
+         *
+         *     就相当于把SuperType中的属性和方法列举出来一一成为SubType属性和方法，
+         *     这样，引用类型就成为了SubType的实例属性，从而实例属性是每个实例都有一份实例属性的副本,所以不会共享
+         * **/
+        //继承了SuperType   ---->传入初始化参数
+        // SuperType.call(this, "Nicholas");
+        //也可以通过值类型传参进来
+        SuperType.call(this, name);
+      }
+      window.onload = function () {
+        //new SubType时SubType中把SuperType的执行环境放在了SubType中，都是实例属性因此目前没有共享的概念(原型)
+        var instance1 = new SubType("Nicholas");
+        instance1.colors.push("black");
+        console.log(instance1.colors); //(4) ["red", "blue", "green", "black"]
+        var instance2 = new SubType("Greg");
+        console.log(instance2.colors); //(3) ["red", "blue", "green"]
+        console.log("-----------------------传递参数------------------------");
+        console.log(instance1.name); //Nicholas
+        console.log(instance2.name); //Greg
+      };
+    </script>
+  </body>
+</html>

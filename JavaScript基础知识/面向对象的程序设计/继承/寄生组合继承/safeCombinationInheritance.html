@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 寄生组合继承：
+       *      想要深刻认识寄生组合继承，必须先了解 组合继承存在的问题：
+       *          无论什么情况下都会调用两次超类型构造函数：
+       *              一次是在创建值类型原型的时候，另一次是在子类型构造函数的内部。
+       *          子类型最终会包含超类型对象的全部实例属性，
+       *          但我们不得不在调用子类型构造函数时重写这些属性。
+       *       问题：有两组name和colors属性：一组在实例上，一直在SubType原型中。
+       *     解决这个问题：--------寄生组合继承
+       *
+       *    所谓寄生组合继承：即通过借用构造函数来继承属性，通过原型链的混成形式来继承方法。
+       *    基本思路：
+       *        不必为了指定子类型的原型而调用超类型的构造函数，所需的无非就是超类型原型的一个副本而已。
+       *        本质上就是使用寄生式继承来继承超类型的原型，然后再将结果指定给子类型的原型。
+       *
+       *
+       *
+       *
+       * **/
+      //---------------组合继承的案例-------------
+      function SuperType(name) {
+        this.name = name;
+        this.colors = ["red", "blue", "green"];
+      }
+      SuperType.prototype.sayName = function () {
+        console.log(this.name);
+      };
+      function SubType(name, age) {
+        /**
+         * 第二次调用SuperType()：
+         *        这时又在新对象是上创建了实例属性name和colors,
+         *        这里这两个属性屏蔽了前面SubType.prototype中的name和colors，
+         *        所以引用属性还是存在于构造函数中的也就是实例属性
+         * **/
+        SuperType.call(this, name);
+        this.age = age;
+      }
+      /**
+       * 第一次调用SuperType()：
+       *        这时SubType.prototype会得到两个属性：name和colors
+       *        它们都是SuperType的实例属性，只不过现在位于SubType的原型中
+       * **/
+      SubType.prototype = new SuperType();
+      SubType.prototype.constructor = SubType;
+      SubType.prototype.sayAge = function () {
+        console.log(this.age);
+      };
+      //--------------------寄生组合继承案例----------------------
+      /**
+       * inheritPrototype()实现了寄生组合继承的最简单形式。
+       *    两个参数：
+       *        (1)子类型构造函数
+       *        (2)超类型构造函数
+       *   在此函数内部：
+       *        第一步：创建超类型原型的第一个副本
+       *        第二步：为创建的副本添加constructor属性，从而弥补因重写原型而失去的默认constructor属性
+       *        第三步：将新创建的对象(即超类型原型的副本)赋值给子类型的原型。
+       *    这样就可以使用inheritPrototype()函数取替换组合继承中存在的调用两次超类型构造函数的问题
+       *
+       *    个人理解：
+       *        把超类型原型中的属性或方法赋值给子类型的原型，因为赋值时相当重写了子类型的原型，
+       *        所以就顺便指定了一下constructor属性为子类型构造函数，
+       *        重点：只调用了一次SuperType构造函数，
+       *             使用inheritPrototype方法只是为了拿到SuperType原型中的共享属性或方法，
+       *         也就不存在SubType中的实例属性屏蔽SubType.prototype中的属性或方法了
+       *
+       * 这个例子的高效率体现在它只调用了一次SuperType构造函数，
+       * 并且避免了在SubType.prototype上面创建不必要的、多余的属性
+       * **/
+      function inheritPrototype(subType, superType) {
+        var prototype = object(superType.prototype); //创建对象
+        prototype.constructor = subType; //增强对象
+        subType.prototype = prototype; //指定对象
+      }
+
+      function SuperType(name) {
+        this.name = name;
+        this.colors = ["red", "blue", "green"];
+      }
+      SuperType.prototype.sayName = function () {
+        console.log(this.name);
+      };
+      function SubType(name, age) {
+        SuperType.call(this, name);
+        this.age = age;
+      }
+      //此时子类型原型上拿到了超类型原型上的所有属性或方法，并制定了constructor属性
+      inheritPrototype(SubType, SuperType);
+      SubType.prototype.sayAge = function () {
+        console.log(this.age);
+      };
+    </script>
+  </body>
+</html>

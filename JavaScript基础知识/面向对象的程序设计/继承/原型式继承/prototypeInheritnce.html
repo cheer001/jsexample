@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 原型式继承：
+       *      基本思想:
+       *          借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。
+       *       这种方式并没有使用严格意义上的构造函数。
+       * **/
+      /**
+       * 在object内部，先创建了一个临时个构造函数，
+       *    然后传入的对象作为这个构造函数的原型，
+       *    最后返回了这个临时类型的新实例
+       * 从本质将，object()对传入其中的对象执行了一次浅复制
+       *
+       *    这种原型式继承，要求首先必须要有一个对象可以作为另一个对象的基础，
+       *    然后把它传递给object函数，再将具体需求对得到的对象加以修改即可。
+       *
+       *    个人理解：
+       *        把传入对象覆盖临时构造函数的默认原型，通过object()函数和返回出去，
+       *        这样传入对象就成了返回出去构造函数的原型了
+       *        即（F.prototype = o），后面每个实例调用时拿到的都是临时构造函数的原型(即person)
+       * **/
+      function object(o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+      }
+      window.onload = function () {
+        var person = {
+          name: "Nicholas",
+          friends: ["Shelly", "Court", "Ven"],
+        };
+        // var anotherPerson = object(person);
+        // anotherPerson.name = "gerg";
+        // anotherPerson.friends.push("Job");
+        // var yetAnotherPerson = object(person);
+        // yetAnotherPerson.name = "Linda";
+        // yetAnotherPerson.friends.push("Barbie");
+        /**
+         * anotherPerson和yetAnotherPerson两个实例向friends添加的值最后都存在于person.friends
+         *      这是因为person是object()的传入对象，
+         *      object()返回的构造函数的原型对象也就是这个传入对象，
+         *      既然person是存在返回构造函数的原型上的，那它的所有引用属性就是共享的
+         * 个人理解:
+         *      不是不要让引用类型在原型对象上去共享的吗？
+         *      本人不能理解原型式继承的意义在哪里，节约对象吗？
+         *      那也就只是解决了构造函数中方法多次实例化导致的对象浪费的问题啊，
+         *      构造函函数中引用类型被共享的问题还存在着。
+         * **/
+        // console.log(person.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+        // console.log(anotherPerson.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+        // console.log(yetAnotherPerson.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+
+        console.log("------------使用Object.create()----------------");
+        /**
+         * ECMAScript5通过新增  Object.create()方法规范了原型式继承。
+         *      两个参数：
+         *          (1)用作新对象原型的对象
+         *          (2)为新对象定义额外属性的对象(可选的)
+         *      在传入一个参数的情况下，Object.create()与原型式继承的行为相同
+         * **/
+        var anotherPerson = Object.create(person);
+        anotherPerson.friends.push("Job");
+        var yetAnotherPerson = Object.create(person);
+        yetAnotherPerson.friends.push("Barbie");
+        console.log(person.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+        console.log(anotherPerson.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+        console.log(yetAnotherPerson.friends); //(5) ["Shelly", "Court", "Ven", "Job", "Barbie"]
+        console.log(
+          "--------------使用Object.create()传递两个参数-----------------"
+        );
+        var anotherPerson2 = Object.create(person, {
+          name: { value: "Greg" },
+        });
+        console.log(anotherPerson2.name); //Greg
+      };
+    </script>
+  </body>
+</html>

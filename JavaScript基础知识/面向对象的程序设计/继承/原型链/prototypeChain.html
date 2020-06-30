@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 许多OO语言都支持两种继承方式：
+            接口继承和实现继承。
+                接口继承只继承方法签名，而实现继承则继承实际的方法。
+                由于函数没有签名，在ECMAScript中无法实现接口继承。
+                ECMAScript只支持实现继承，而且其实现继承主要是依靠原型链来实现的。 -->
+    <script>
+      /**
+       * 原型链继承：
+       *      基本实现：
+       *          利用原型让一个引用类型继承另一个引用类型的属性和方法。
+       *
+       *  回顾构造函数、原型和实例的关系：
+       *      每个构造函数都有一个原型对象并且每个构造函数都有一个prototype属性指向它的原型对象，
+       *      原型对象都包含一个指向构造函数的指针，
+       *      而实例都包含一个指向原型对象的内部指针。
+       *
+       * 假如让一个原型对象等于另一个对象的实例，结果会怎样？
+       *      结果:原型对象将包含一个指向另一个原型的指针，
+       *      相应的，另一个原型中也包含着一个指向另一个构造函数的指针。
+       *      假如另一个原型又是另一个类型的实例，
+       *      那么上述关系依然成立，如此层层递进，就构成了实例于原型的链条。
+       *     这就是所谓的原型链的基本概念。
+       * **/
+      function SuperType() {
+        this.property = true;
+
+        //添加引用类型
+        this.colors = ["red", "blue", "green"];
+      }
+      SuperType.prototype.getSuperValue = function () {
+        return this.property;
+      };
+      function SubType() {
+        this.subProperty = false;
+      }
+      //继承了SuperType
+      /**
+       * 这里相当于：SubType.prototype = 另一个对象(new SuperType())   也就是重写了默认原型
+       *    实例(SubType.prototype) = new SuperType(),这个实例(也就是SubType.prototype这个新原型)
+       *    不仅作为一个SuoerType的实例所拥有的的全部属性和方法，而且其内部指针，指向了SuperType的原型
+       * **/
+      SubType.prototype = new SuperType();
+
+      SubType.prototype.getSubValue = function () {
+        return this.subProperty;
+      };
+      /**
+       * 重写超类型中的方法：
+       *     SubType.prototype.getSuperValue会屏蔽掉SuperType.prototype.getSuperValue，
+       *     因此SuperType.prototype.getSuperValue就访问不到了，只能访问SubType.prototype.getSuperValue
+       * 注：给原型添加方法的代码一定要放在替换原型的语句之后，否则访问不到其中的属性和方法
+       * **/
+      SubType.prototype.getSuperValue = function () {
+        return false;
+      };
+      //另外 在继承后，不能使用对象字面量创建原型方法，因为这样做会重写原型
+      //   SubType.prototype = {
+      //     //这里^^^{}^^^就相当于用一个Object重写了默认原型，或者继承的原型，导致默认原型，或者继承的原型中的方法和属性不能访问
+      //     getSubValue: function () {
+      //       return this.subProperty;
+      //     },
+      //     someOtherMethod: function () {
+      //       return false;
+      //     },
+      //   };
+      window.onload = function () {
+        var instance = new SubType();
+        //继承之后就饿可以访问SuperType构造函数中的实例属性或方法，还有原型中的属性或方法
+        console.log(instance.getSuperValue()); //true   //重写后false
+        console.log(instance.property); //true
+        console.log(instance.subProperty); //false
+        console.log(instance.getSubValue()); //false
+        console.log(SubType.prototype.constructor); //这里的原型构造函数属性没有指向自己的构造函数，指向的是SuperType()
+        /**
+         * 打印结果：
+         * SuperType() {
+            this.property = true;
+        }
+        */
+        console.log(
+          SubType.prototype.constructor == SuperType.prototype.constructor
+        ); //true   他们的原型都指向的同一个构造函数SuperType()
+        /**
+         * 最终结果：
+         *      instance指向SubType的原型，SubType的原型又指向SuperType的原型
+         * **/
+        console.log("-------------------完整原型链-----------------");
+        /**
+         * 当调用instance.toString()时，实际上调用的是保存在Object.prototype中的那个方法
+         *      所有引用类型默认都继承了Object,而这个继承也是通过原型链实现的。
+         *  注：所有构造函数的默认原型都是Object的实例，因此默认原型都会包含一个内部指针，指向Object.prototype。
+         *      这也正是所有自定义类型都会继承toString()、valueOf()等默认方法的根本原因。
+         * **/
+        console.log(instance.toString());
+        console.log("--------------------确定原型与实例的关系----------");
+        //(1)使用instanceof来判断实例是否是一个对象的类型
+        console.log(instance instanceof Object); //true
+        console.log(instance instanceof SuperType); //true
+        console.log(instance instanceof SubType); //true
+        //(1)使用每个原型对象的isPrototyprOf()来判断实例是否是一个对象的类型
+        console.log(Object.prototype.isPrototypeOf(instance)); //true
+        console.log(SuperType.prototype.isPrototypeOf(instance)); //true
+        console.log(SubType.prototype.isPrototypeOf(instance)); //true
+        console.log(
+          "------------------使用对象字面量的方式添加新方法-----------"
+        );
+        //原型链已经被切断----SubType和SuperType之间已经没有关系了
+        // console.log(instance.getSuperValue()); //instance.getSuperValue is not a function
+        console.log("------------------原型链的问题-------------------");
+        /**
+         * 原型链虽然很强大，可以用它来实现继承，但它也存在一些问题：
+         *      (1)最主要的问题来自包含引用类型值的原因（引用类型放在原型中会被所有实例共享），
+         *      而这也正是为什么要在构造函数中，而不是在原型对象中定义属性的原因。
+         *      这两句话的代码：
+         *      function SuperType() {
+         *           //添加引用类型
+         *           this.colors = ["red", "blue", "green"];
+         *        }
+         *      console.log(SubType.prototype.colors);
+         *     说白了就是SubType.prototype继承SuperType之后SuperType函数中的实例属性(这里重点指的是引用类型)，
+         *     SubType.prototype就有了此引用类型(就是这里导致的问题),
+         *     ^^^引用类型放在原型上会导致所有实例都共享同一个引用类型^^^
+         *      (2)另外一个问题：在创建子类型的实例时，不能向超类型的构造函数中传递参数。
+         *      --鉴于这两个问题，因此事件中很少会单独使用原型链。
+         * -------------------------------------------------------------
+         *      在通过原型来实现继承时，原型实际上会变成另一个类型的实例。
+         *      于是，原先的实例属性也就顺理成章的变成了现在的原型属性了。
+         *      这两句话的代码:
+         *      SubType.prototype = new SuperType();
+         *      console.log(SubType.prototype.property); //SuperType中的实例属性  true
+         * **/
+        console.log(SubType.prototype.property); //true
+        console.log(SubType.prototype.colors); //(3) ["red", "blue", "green"]
+        var instance1 = new SubType();
+        instance1.colors.push("black");
+        console.log(instance1.colors); //(4) ["red", "blue", "green", "black"]
+        var instance2 = new SubType();
+        console.log(instance2.colors); //(4) ["red", "blue", "green", "black"]
+      };
+    </script>
+  </body>
+</html>
