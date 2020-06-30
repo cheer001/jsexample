@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var person1 = new Person();
+        console.log(person1);
+        var person2 = new Person();
+        console.log(person2);
+        /**
+         * person1和person2都是使用的原型上的sayName(也就是说原型上的属性和方法供所有实例共享)
+         *   这样就解决了构造函数存在的每调用一次构造函数，而构造函数中的函数就实例化一次 的问题
+         * **/
+        console.error(person1.sayName == person2.sayName);
+        /**
+           * Person {}
+              __proto__:
+                  age: 29
+                  job: "SF"
+                  name: "Nicholas"
+                  sayName: ƒ ()
+                  constructor: ƒ Person()
+           * **/
+        /**
+         * 可以看出来  实例有一个__proto__属性指向原型，而原型有一个constructor属性指向它所在的构造函数
+         * **/
+        /**
+         * 理解原型对象：
+         *      只要创建了一个新函数，就会根据一组特定的规则，
+         *          为改函数创建一个prototype属性，该属性指向函数的原型对象。
+         *              也就是(函数的prototype指向函数的原型)
+         *      默认情况下，所有原型对象都会自动获得一个constructor属性，
+         *          该属性包含一个指向prototype属性 所在函数的指针。
+         *              也就是(原型的constructor属性指向prototype属性所在的函数)
+         *      创建一个新实例后，
+         *          该实例内部将包含一个指针(内部属性),指向构造函数的原型对象，
+         *          这个连接仅存在与实例于构造函数的原型之间，而不是与构造函数之间
+         *              也就是(实例的__proto__属性指向构造函数的原型对象)
+         * **/
+        /**
+         * 重写原型中的属性会屏蔽原型中的同名属性
+         *      会阻止我们访问原型中的同名属性
+         * 解决：可以使用delete操作符删除属性
+         * **/
+        person1.name = "Greg";
+        console.log(person1.name); //Greg  来自实例
+        //使用delete操作符删除属性
+        delete person1.name;
+        console.log(person1.name); //Nicholas 来自原型
+        //使用Object.getPrototypeOf返回这个对象的实例
+        console.log(Object.getPrototypeOf(person1)); //{name: "Nicholas", age: 29, job: "SF", sayName: ƒ, constructor: ƒ}
+        console.log(Object.getPrototypeOf(person1) == Person.prototype); //true
+        //使用实例的hasOwnProperty判断一个属性或方法是否存在实例中
+        console.log(person1.hasOwnProperty("name")); //false  因为上面已经delete了
+        person1.name = "Greg";
+        console.log(person1.hasOwnProperty("name")); //true
+      };
+      //   function Person() {}
+      //   Person.prototype.name = "Nicholas";
+      //   Person.prototype.age = 29;
+      //   Person.prototype.job = "SF";
+      //   Person.prototype.sayName = function () {
+      //     console.error(this.name);
+      //   };
+      window.onload = function () {
+        /**
+         *更简单的原型语法 ：
+         *    为防止每添加一次属性或方法就写一次Person.prototype，
+         *    和更好的封装原型的功能。
+         * 采用一个包含所有属性和方法的对象字面量来重写整个原型对象
+         *
+         * 这样做有一个注意点：
+         *      Person.prototype = {}这里相当于用一个新的对象重写了原型对象，
+         *      所以constructor属性指向{}也就是object对象
+         *
+         * 原型对象的问题：
+         *      (1)省略了为构造函数传递初始化参数
+         *      (2)所有实例默认情况下都将取得相同的值
+         *      (3)在原型上添加引用类型(例如数组)的属性时，导致所有实例共享同一个引用类型
+         *
+         * **/
+        function Person() {}
+        /**
+         * 在原型对象定义之前调用构造函数并实例化  之后访问属性和方法会访问不到(报错)，原因：
+         *          (1)后面的原型重写了前面的原型
+         *          (2)调用构造函数时原型对象中没有任何属性和方法
+         * **/
+        // var friend = new Person(); //在原型对象定义之前调用构造函数并实例化
+        Person.prototype = {
+          /**
+           * 如果constructor属性很重要可以将它设置为适当的值
+           * 但是这样又会将对象内部的[[Enumerate]]特性被设置为true,
+           *
+           *        所以可以改为Object.definePerperty
+           * **/
+          constructor: Person,
+          name: "Nicholas",
+          age: 29,
+          job: "SF",
+          sayName: function () {
+            console.error(this.name);
+          },
+
+          //添加一个引用类型
+          friend: ["Perter", "Jennifer"],
+        };
+        console.log(Person.prototype.constructor == Object); //true  设置constructor之后  false
+        console.log(Person.prototype.constructor == Person); //false  设置constructor之后  true
+        //将构造函数原型的constructor属性设置为Person，同时又不改变对象内部的[[Enumerate]]特性
+        Object.defineProperty(Person.prototype, "constructor", {
+          enumerable: false,
+          value: Person,
+        });
+        var friend = new Person(); //在原型对象定义之后调用构造函数并实例化
+        friend.sayName(); //Nicholas
+        Person.prototype.hello = function () {
+          console.error("hello");
+        };
+        friend.hello(); //hello
+        //----------------共享同一个引用类型------------
+        var person1 = new Person();
+        var person2 = new Person();
+        person1.friend.push("May");
+        console.log(person1.friend); // ["Perter", "Jennifer", "May"]
+        console.log(person2.friend); // ["Perter", "Jennifer", "May"]
+        console.log(person1.friend == person2.friend); //true
+      };
+    </script>
+  </body>
+</html>

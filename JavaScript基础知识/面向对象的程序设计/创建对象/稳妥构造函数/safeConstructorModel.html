@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 稳妥构造函数模式：
+       *      基本思想：
+       *          没有公共属性，而且其方法也不引用this对象
+       *    稳妥对象最适合在一些安全的环境中（这些环境会禁止使用this和new），或者防止数据被其他引用程序改动时
+       *    稳妥构造函数遵循与寄生构造函数类似的模式，两点不同：
+       *        (1)新创建对象的实例方法不引用this
+       *        (2)不使用new操作符调用构造函数
+       * **/
+      function Person(name, age, job) {
+        var o = new Object();
+        o.name = name;
+        o.age = age;
+        o.job = job;
+        //闯进来的name属性只有sayName()方法能够访问
+        o.sayName = function () {
+          console.error(name);
+        };
+        return o;
+      }
+      window.onload = function () {
+        var friend = Person("Nicholas", 29, "SF");
+        friend.sayName();
+      };
+    </script>
+  </body>
+</html>

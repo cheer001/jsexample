@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+        var person1 = createPerson("Nicholas", 29, "SF");
+        var person2 = createPerson("Greg", 27, "Doctor");
+        console.log(person1);
+        console.log(person2);
+      };
+      /**
+       * 解决了多个相似对象的问题
+       * 缺点：没有解决对象的识别问题(即 怎样知道一个对象的类型)
+       *    解决：使用 构造函数模式(有constructor属性可以判断指向的类型)
+       * **/
+      function createPerson(name, age, job) {
+        var o = new Object();
+        o.name = name;
+        o.age = age;
+        o.job = job;
+        o.sayNme = function () {
+          alert(this.name);
+        };
+        return o;
+      }
+    </script>
+  </body>
+</html>

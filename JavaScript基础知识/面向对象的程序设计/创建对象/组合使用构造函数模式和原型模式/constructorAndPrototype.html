@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 收集构造函数模式和原型模式的有点集中：
+       *      (1)把实例属性定义在构造函数中
+       *      (2)并且解决了原型对象不能传初始化参数的问题
+       *      (3)把所有需要共享的方法或属性定义在原型对象中
+       * **/
+      function Person(name, age, job) {
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        this.friend = ["Perter", "Jennifer"];
+      }
+      Person.prototype = {
+        constructor: Person,
+        sayName: function () {
+          console.error(this.name);
+        },
+      };
+      window.onload = function () {
+        var person1 = new Person("Nicholas", 29, "SF");
+        var person2 = new Person("Greg", 27, "Nurse");
+        person1.friend.push("May");
+        console.log(person1.friend); // ["Perter", "Jennifer", "May"]
+        console.log(person2.friend); // ["Perter", "Jennifer"]
+        console.log(person1.friend == person2.friend); //false
+      };
+    </script>
+  </body>
+</html>
