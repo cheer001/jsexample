@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="someElement">click here</div>
+    <script>
+      /**
+       * 闭包在IE的版本中会有一些特殊的问题：
+       *      如果闭包的作用域链中保存着一个HTML元素，那就意味着该元素将无法销毁。
+       * **/
+
+      /**
+       * 这里创建了一个作为element元素事件处理程序的闭包，而这个闭包又创建了一个循环引用。
+       * 由于匿名函数保存了一个对assignHandler()活动对象的引用，因此就会导致无法减少element的引用数。
+       *只要匿名函数存在，element的引用数至少也是1，因此它所占用的内存就永远不会被回收。
+       * **/
+      function assignHandler() {
+        var element = document.getElementById("someElement");
+        element.onclick = function () {
+          console.log(element.id);
+        };
+      }
+      //--------使用副本解决循环引用问题----start-------------------
+      /**
+       * 把element.id的一个副本保存在变量中，并且在闭包中引用该变量，消除了循环引用。
+       * 但仅仅做到这一步，还是不能解决内存泄漏的问题。
+       * 注：闭包会引用包含函数的整个活动对象，而其中包含着element。
+       *    即使闭包不直接引用element，包含函数的活动对象中也存仍然会保存一个引用。
+       *    因此，有必要把element变量设置为null。
+       *    这样就能解除对DOM对象的引用，顺理的减少其引用数，确保正常回收其占用的内存。
+       * **/
+      function assignHandler() {
+        var element = document.getElementById("someElement");
+        var id = element.id;
+        element.onclick = function () {
+          console.log(id);
+        };
+        element = null;
+      }
+      //--------使用副本解决循环引用问题----end---------------------
+      window.onload = function () {
+        assignHandler();
+      };
+    </script>
+  </body>
+</html>

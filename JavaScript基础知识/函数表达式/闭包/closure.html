@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 有不少开发人员总数搞不清匿名函数和闭包的概念，因此经常混用。
+       *      闭包： 是指有权访问另一个函数作用域中的变量,的函数
+       *
+       *  创建闭包的方式:
+       *      在一个函数内部创建另一个函数
+       *
+       *想要理解闭包的前提：
+       *    函数调用后的执行过程：(创建作用域以及作用域有什么作用的细节)
+       *       但某个函数第一次被调用时，
+       *       (1)会创建一个执行环境(execution context)及相应的作用域链(scope chain),
+       *       (2)并把作用域链赋值给一个特殊的内部属性(即[[Scope]])。
+       *       (3)然后使用this和arguments还有其他命名参数的值来初始化函数的活动对象(activation object)。
+       *      但在作用域链中，外部函数的活动对象始终处于第二位，外部函数的外部函数的活动对象处于第三位，
+       *      ......直到作为作用域链终点的全局执行环境。
+       *        无论什么时候在函数中访问一个变量时，就会从作用域链中搜索具有相应名字的变量。
+       *        一般来讲，函数执行完毕后，局部活动对象就会被销毁，内存中仅保存全局作用域(全局执行环境的变量对象)。
+       *
+       *       但是闭包的情况又有所不同。
+       *            在另一个函数内部定义的函数将包含函数(即外部函数)的活动对象添加到它的作用域中。
+       *            因此，在createComparisonFunction()函数内部定义的匿名函数的作用域链中，
+       *            实际上将会包含外部函数createComparisonFunction()的活动对象
+       *
+       *
+       * 对于这个例子中compare()函数的执行环境而言，其作用域中包含两个变量对象：
+       *     本地活动对象和全局变量对象。
+       * 所以，作用域本质上是一个指向变量对象的指针列表，它只引用但不实际包含变量对象。
+       *
+       *
+       *
+       * 由于闭包会携带包含它的方式的作用域，因此会比其他函数占用更多的内存。过度使用闭包可能会导致内存占用过多，
+       * 建议在绝对必要时再考虑使用闭包。
+       * **/
+      function createComparisonFunction(propertyName) {
+        return function (object1, object2) {
+          /**
+           * 这两行代码是内部函数(一个匿名函数)中的代码，访问了外部函数中的变量propertyName。
+           *  即使这个内部函数被返回了，而且是在其他地方被调用了，但它仍然可以访问变量中的代码，
+           *  访问了外部函数中的变量propertyName。
+           *
+           * 之所以还能访问这个变量，是因为内部函数的作用域包含createComparisonFunction()的作用域
+           *
+           * **/
+          //***********************************
+          var value1 = object1[propertyName];
+          var value2 = object2[propertyName];
+          //***********************************
+          if (value1 < value2) {
+            return -1;
+          } else if (value1 > value2) {
+            return 1;
+          } else {
+            return 0;
+          }
+        };
+      }
+      window.onload = function () {
+        /**
+         *    在匿名函数从createComparisonFunction()中被返回后，
+         *    它的作用域链被初始化为包含createComparisonFunction()函数的活动对象和全局变量对象。
+         *    这样，匿名函数就可以访问在createComparisonFunction()中定义的所有变量。
+         *    更为重要的是，createComparisonFunction()函数在执行完毕后，其活动对象也不会被销毁，
+         *    因为匿名函数的作用域链仍然在引用这个对象。
+         *    换句话说，但createComparisonFunction()函数返回后，其执行环境的作用域链会被销毁，
+         *    但它的活动对象仍然会留在内存中；直到匿名函数被销毁后，createComparisonFunction()的
+         *    活动对象才会被销毁
+         * **/
+        //首先，创建的比较函数被保存在变量compareNames中
+        var compareNames = createComparisonFunction("name");
+        //调用函数
+        var result = compareNames({ name: "Nicholas" }, { name: "Greg" });
+        /**
+         * 通过将compareNames设置为null解除对该函数的引用，就等于通知垃圾回收例程将其清除。
+         *  随着匿名函数的作用域链被销毁，其他作用域(除了全局作用域)也都可以安全的销毁了
+         * **/
+        //解除对匿名函数的引用(以便释放内存)
+        compareNames = null;
+      };
+
+      //------------------搞清楚作用域及作用域有什么作用------------------
+      function compare(value1, value2) {
+        if (value1 < value2) {
+          return -1;
+        } else if (value1 > value2) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+      window.onload = function () {
+        var result = compare(5, 10);
+        /**
+         * 案例解析：
+         *      先定义了compare()函数,然后又在全局作用域中调用了它。
+         *          当第一次调用compare()时，会创建一个包含this和arguments、value1、value2的活动对象。
+         *          全局执行环境的变量对象(包含this、result和compare)
+         *          在compare()执行环境的作用域链中则处于第二位。
+         *
+         *          后台的每个执行环境都有一个表示变量的对象-----变量对象。
+         *          全局环境的变量对象始终存在，而像compare()函数这样的局部环境的变量对象，
+         *          则只在函数的执行过程中存在。
+         *          再创建compare()函数时，会创建一个预先包含全局变量对象的作用域，
+         *          这个作用域被保存在内部的[[Scope]]属性中。
+         *          当调用compare()函数时，会为函数创建一个执行环境，
+         *          然后通过复制函数的[[Scope]]属性 中的对象构建起执行环境的作用域。
+         *          此后，又有一个活动对象(在此作为变量对象使用)被创建并被推入执行环境作用域链的前端。
+         *
+         *
+         * **/
+        console.log(result); //-1
+      };
+    </script>
+  </body>
+</html>

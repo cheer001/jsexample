@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 递归是在一个函数通过名字调用诸神的情况下构成的
+       *
+       *      argements.callee是一个指向正在执行的函数的指针
+       * **/
+      function factorial(num) {
+        if (num <= 1) {
+          return 1;
+        } else {
+          //   return num * factorial(num - 1);
+          //使用arguments.callee解决这个问题
+          //argements.callee是一个指向正在执行的函数的指针
+          return num * arguments.callee(num - 1);
+        }
+      }
+
+      window.onload = function () {
+        //这是一个经典的递归阶乘函数
+        console.log(factorial(4)); //24
+        var anotherFactorial = factorial;
+        factorial = null;
+        //因为factorial已经不是函数了，却还在引用
+        console.log(anotherFactorial(4)); //factorial is not a function  解决后  24
+
+        //但是在严格模式下不能访问到arguments.callee属性，因此使用：命名函数表达式  来达到相同的效果
+        var functional = function f(num) {
+          if (num <= 1) {
+            return 1;
+          } else {
+            return num * f(num - 1);
+          }
+        };
+      };
+    </script>
+  </body>
+</html>

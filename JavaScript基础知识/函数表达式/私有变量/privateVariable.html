@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * JavaScript中没哟私有成员的概念，所有属性都是公有的。
+       * 不过倒是有一个私有变量的概念。
+       * 任何在函数中定义的变量，函数的参数，局部变量和在函数内部定义的其他函数，
+       * 在函数的外部都不能访问，都可以认为是私有变量。
+       * **/
+
+      /**
+       * 在这个函数内部，有3个私有变量：num1,num2和sum。
+       * 在函数内部可以访问这几个变量，但在函数外部则不能访问它们。
+       * 如果这个函数内部创建一个闭包,那么闭包通过自己的作用域也可以访问这些变量，
+       * 而利用这一点，就可以创建用于访问私有变量的公有方法。
+       *
+       *
+       * **/
+      function add(num1, num2) {
+        var sum = num1 + num2;
+        return sum;
+      }
+
+      /**
+       *
+       * 我们把有权访问私有变量和私有函数的公有方法称为特权方法(privileged method)。
+       *有两种在对象上创建特权方法的方式。
+       *        第一种：在构造函数中定义特权方法。
+       *                这个模式在构造函数内部定义了所有私有变量和函数。
+       *                然后，又基础创建了能够访问这些私有成员的特权方法。
+       *                能够在构造函数中定义特权方法，是因为特权方法作为闭包
+       *                有权访问在构造函数中定义的所有变量和函数。
+       *
+       *
+       * 利用私有和特权成员，可以隐藏那些不应该被直接修改的数据
+       *
+       * **/
+      function MyObject() {
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction() {
+          return false;
+        }
+        //特权方法
+        this.publicMethod = function () {
+          privateVariable++;
+          return privateFunction();
+        };
+      }
+      //利用私有和特权成员，可以隐藏那些不应该被直接修改的数据
+      function Person(name) {
+        this.getName = function () {
+          return name;
+        };
+        this.setName = function (value) {
+          name = value;
+        };
+      }
+      window.onload = function () {
+        /**
+         * 这个函数有两个特权方法：getName和setName,这两个方法都可以在构造函数外部使用，
+         * 而且都有权访问私有变量，但在Person构造函数外部，没有任何办法访问name。
+         *
+         * 由于这两个方法是在构造函数内部定义的，它们作为闭包能够通过作用域链访问name。
+         * 私有变量name在Person的每一个实例中都不相同，因为每次调用构造函数都会重新创建者两个方法。
+         *
+         *
+         * 不过在构造函数中定义特权方法也有一个缺点：必须使用构造函数模式来达到此目的。
+         *      构造函数模式的缺点是：针对每个实例都会创建同样一组新方法  ----->使用
+         *          静态私有变量来实现特权方法解决这个问题(每个实例都会创建同样一组新方法)
+         *
+         * **/
+        var person1 = new Person("Nicholas");
+        console.log(person1.getName()); //Nicholas
+        person1.setName("Greg");
+        console.log(person1.getName()); //Greg
+
+        var person2 = new Person("Michael");
+        console.log(person1.getName()); //Greg
+        console.log(person2.getName()); //Michael
+      };
+    </script>
+  </body>
+</html>

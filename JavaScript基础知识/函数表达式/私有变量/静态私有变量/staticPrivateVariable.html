@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 静态私有变量：
+       *      解决的问题：在构造函数模式中创建的方法每次实例化后都会创建同样一组新方法。
+       *                 (因为构造函数中的函数也是对象，每实例化一次对象就会开辟一个的内存存放这些方法)
+       *
+       *      基本思想：
+       *          通过在私有作用域中，定义私有变量或函数，同样也可以创建特权方法
+       *
+       * **/
+
+      /**
+       * 这个模式创建了一个私有作用域，并在其中封装了一个构造函数及相应的方法。
+       * 在私有作用域中，首先定义了私有变量和私有函数，然后又定义了构造函数及其公有方法。
+       * 公有方法是在原型上定义的，这一点体现了典型的原型模式。
+       *
+       * 注：在定义构造函数是并没有使用函数声明，而是使用了函数表达式。
+       * 函数表达式只能创建局部函数，但那不是我们想要的。
+       * 出于同样的原因，也没哟在声明MyObject时使用var关键字。（因为初始化未经声明的变量，总会创建一个全局变量。）
+       * 因此，MyObject就成为了一个全局变量，能够在使用作用域之外被访问到。
+       *
+       *
+       * 与构造函数模式定义特权方法的区别：
+       *       私有变量和函数时由实例共享的。
+       *       由于特权方法是在原型上定义的，因此所有实例都使用同一个函数(原型上的属性或方法会被共享)。
+       *       而这个特权方法，作为一个闭包，总是保存着对包含函数作用域的引用。
+       * **/
+      (function () {
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction() {
+          return false;
+        }
+        //构造函数
+        MyObject = function () {};
+        //公有/特权方法
+        MyObject.prototype.publicMthod = function () {
+          privateVariable++;
+          return privateFunction();
+        };
+      })();
+
+      (function () {
+        var name = "";
+        Person = function (value) {
+          name = value;
+        };
+        Person.prototype.getName = function () {
+          return name;
+        };
+        Person.prototype.setName = function (value) {
+          name = value;
+        };
+      })();
+      window.onload = function () {
+        /**
+         * getName 和 setName都存在于Person的原型上，所以无论哪一个实例修改了属性，
+         * 另一个实例拿到的值就会变成修改后的值
+         * **/
+        var person1 = new Person("Nicholas");
+        console.log(person1.getName()); //Nicholas
+        person1.setName("Greg");
+        console.log(person1.getName()); //Greg
+
+        var person2 = new Person("Michael");
+        console.log(person1.getName()); //Michael
+        console.log(person2.getName()); //Michael
+      };
+    </script>
+  </body>
+</html>

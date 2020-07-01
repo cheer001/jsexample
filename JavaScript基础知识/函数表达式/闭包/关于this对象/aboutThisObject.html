@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 在闭包中使用this对象也可能会导致一些问题。
+       *
+       * 注：this对象是在运行时基于函数的执行环境绑定的：在全局函数中，this等于window,
+       *     而当函数被作为某个对象的方法调用时，this等于那个对象。
+       *
+       * 不过，匿名函数的执行环境具有全局性，因此其this对象通常指向window。
+       * 当有些时候由于编写闭包的方式不同，这一点可能不会那么明显。
+       * **/
+      var name = "The Window";
+      var object = {
+        name: "My Object",
+        getNameFunc: function () {
+          //-----把外部函数作用域中的this对象保存在一个闭包能够访问到的变量里---
+          var that = this;
+          return function () {
+            /**
+             * 闭包拿到的是包含函数的一个变量，而这个变量的值保存的是this对象，
+             * 这个this对象在闭包外部(包含函数的作用域中)代表调用者
+             * 这里调用者是object，this就指向object,that拿到的值也就是this的引用(object)
+             * **/
+            return that.name;
+            // return this.name;
+          };
+        },
+      };
+
+      //----------
+      window.onload = function () {
+        /**
+         * 首先创建了一个全局变量name,又创建了一个包含name属性的对象。
+         * 这个对象还包含一个方法---getNameFunc(),它返回一个匿名方式，而这个匿名函数又返回this.name。
+         * 由于getNameFunc()返回一个函数，因此调用object.getNameFunc()()就会立即调用它返回的函数，
+         * 结果就是返回一个字符串。
+         * 然而，这个例子返回的字符串是“The Window”，即全局变量name变量的值。
+         * 为什么匿名函数没有取得其包含作用域的this对象呢？
+         *
+         *this对象在闭包里面使用的情况下：
+         *   原理：
+         *      每个函数在被调用时，其活动对象都会自动取得两个特殊变量：this和arguments。
+         *      内部函数在搜索这两个变量时，只会搜索到其活动对象为止，因此永远不可能直接访问外部函数中的这两个变量。
+         *        不过，把外部函数作用域中的this对象保存在一个闭包能够访问到的变量里，
+         *        就可以让闭包访问到该对象了
+         *
+         * 个人理解：
+         *      闭包中使用this时，其调用的属性或方法从全局变量对象开始往闭包方向查找，
+         *      找到就停止搜索。
+         * **/
+        console.log(object.getNameFunc()()); //The Window  解决后  My Object
+      };
+    </script>
+  </body>
+</html>

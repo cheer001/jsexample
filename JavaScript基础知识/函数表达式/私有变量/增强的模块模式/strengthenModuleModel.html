@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 增强的模块模式，即在返回对象之前假如对其增强的代码。
+       *
+       * 应用场景：
+       *        适合那些单例必须是某种类型的实例，同时还必须添加某些属性和方法对其加以增强的情况。
+       * **/
+      var singleton = (function () {
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction() {
+          return false;
+        }
+        //创建对象
+        var object = new CustomType();
+
+        //添加特权/公有方法和属性
+        (object.publicProperty = true),
+          (object.publicMethod = function () {
+            privateVariable++;
+            return privateFunction();
+          });
+        //返回这个对象
+        return object;
+      })();
+
+      /**
+       * 如果增强模式中那个例子的application对象必须是BaseComponent的实例
+       *
+       * 重写后的应用程序(application)单例中，首先也是像前面例子中一样定义了私有变量。
+       * 主要的不同之处在于命名变量app的创建过程，因为它必须是BaseComponent的实例。
+       * 这个实例实际上是application对象的局部变量版。此后我们又为app对象添加了能够访问私有变量的
+       * 公有方法。     最后一步是返回app对象，结果仍然是将它赋值给全局变量application。
+       * **/
+      var application = (function () {
+        //私有变量和函数
+        var components = new Array();
+        //初始化
+        components.push(new BaseComponent());
+
+        //创建application的一个局部副本
+        var app = new BaseComponent();
+        //公共接口
+        app.getComponentCount = function () {
+          return component.length;
+        };
+        app.registerComponent = function (component) {
+          if (typeof component == "object") {
+            components.push(component);
+          }
+        };
+        //返回这个副本
+        return app;
+      })();
+    </script>
+  </body>
+</html>
