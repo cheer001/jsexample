@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" manifest="/offline.manifest">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../../EventUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        console.log(navigator.onLine);//true
+        EventUtil.addHandler(window, "online", function () {
+          console.log("online");
+        });
+        EventUtil.addHandler(window, "offline", function () {
+          console.log("offline");
+        });
+      });
+    </script>
+  </body>
+</html>

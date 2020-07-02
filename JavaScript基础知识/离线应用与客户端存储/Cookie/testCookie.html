@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../../EventUtil.js"></script>
+    <script src="./CookieUtil.js"></script>
+    <script>
+      EventUtil.addHandler(window, "load", function () {
+        //设置cookie
+        CookieUtil.set("name", "Nicholas");
+        CookieUtil.set("book", "Professional JavaScript");
+
+        //读取cookie的值
+        console.log(CookieUtil.get("name"));
+        console.log(CookieUtil.get("book"));
+
+        //删除cookie
+        // CookieUtil.unset("name");
+        // CookieUtil.unset("book");
+
+        //设置cookie，包括它的路径、域、失效时间
+        CookieUtil.set(
+          "name",
+          "Nicholas",
+          "/books/projs/",
+          "www.wrox.com",
+          new Date("January 1", 2010)
+        );
+        //删除刚刚设置的cookie
+        CookieUtil.unset(
+          "name",
+          "/books/projs",
+          "www.wrox.com",
+          new Date("January 1", 2010)
+        );
+        //设置安全的cookie
+        CookieUtil.set("name", "Nicholas", null, null, null, true);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../../../EventUtil.js"></script>
+    <script src="./SubCookieUtil.js"></script>
+    <script>
+      //假设：document.cookie = data=name=Nicholas&book=Professional%20(空格)JavaScript
+      EventUtil.addHandler(window, "load", function () {
+        document.cookie =
+          "data=name=Nicholas&book=Professional%20(空格)JavaScript";
+        //取得全部子cookie
+        var data = SubCookieUtil.getAll("data");
+        console.log(data.name);
+        console.log(data.book);
+
+        //逐个获取子cookie
+        console.log(SubCookieUtil.get("data", "name"));
+        console.log(SubCookieUtil.get("data", "book"));
+
+        //设置两个cookie
+        SubCookieUtil.set("data", "name", "Nicholas");
+        SubCookieUtil.set("data", "book", "Professional JavaScript");
+
+        //设置全部子cookie和失效日期
+        SubCookieUtil.setAll(
+          "data",
+          { name: "Nicholas", book: "Professional JavaScript" },
+          new Date("January 1,2010")
+        );
+
+        //修改名字的值，并修改cookie的失效日期
+        SubCookieUtil.set(
+          "data",
+          "name",
+          "Michael",
+          new Date("January 1,2010")
+        );
+
+        //仅删除名为name的子cookie
+        SubCookieUtil.unset("data", "name");
+
+        //删除整个cookie
+        SubCookieUtil.unsetAll("data");
+      });
+    </script>
+  </body>
+</html>
